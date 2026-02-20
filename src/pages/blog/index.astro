@@ -54,7 +54,7 @@ const blogJsonLd = [
   ]}
   jsonLd={blogJsonLd}
 >
-  <section class="space-y-8">
+  <section class="space-y-8" data-blog-page>
     <section class="reading-surface space-y-5 p-5 sm:p-6">
       <div class="grid gap-4 md:grid-cols-2">
         <input
@@ -105,7 +105,7 @@ const blogJsonLd = [
       </div>
     </section>
 
-    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3" data-blog-post-list>
+    <div class="grid gap-6" data-blog-post-list>
       {
         posts.map((post) => (
           <PostCard
@@ -140,38 +140,43 @@ const blogJsonLd = [
   <script is:inline>
     const initializeBlogFilters = () => {
       const PER_PAGE = 10;
-      const postList = document.querySelector("[data-blog-post-list]");
-      const searchInput = document.querySelector("[data-blog-search]");
-      const categorySelect = document.querySelector(
-        '[data-category-select="blog"]',
-      );
+      const roots = Array.from(document.querySelectorAll("[data-blog-page]"));
+      const root = roots[roots.length - 1];
+
+      if (!(root instanceof HTMLElement)) {
+        return;
+      }
+
+      if (root.dataset.bound === "true") {
+        return;
+      }
+
+      root.dataset.bound = "true";
+
+      const postList = root.querySelector("[data-blog-post-list]");
+      const searchInput = root.querySelector("[data-blog-search]");
+      const categorySelect = root.querySelector('[data-category-select="blog"]');
       const tagButtons = Array.from(
-        document.querySelectorAll("[data-blog-tag-button]"),
+        root.querySelectorAll("[data-blog-tag-button]"),
       );
       const cards =
         postList instanceof HTMLElement
           ? Array.from(postList.querySelectorAll("[data-post-card]"))
           : [];
-      const resultsText = document.querySelector("[data-blog-results]");
-      const emptyState = document.querySelector("[data-blog-empty]");
-      const pagination = document.querySelector("[data-blog-pagination]");
-      const clearButton = document.querySelector("[data-clear-filters]");
+      const resultsText = root.querySelector("[data-blog-results]");
+      const emptyState = root.querySelector("[data-blog-empty]");
+      const pagination = root.querySelector("[data-blog-pagination]");
+      const clearButton = root.querySelector("[data-clear-filters]");
 
       if (
         !cards.length ||
-        !searchInput ||
-        !categorySelect ||
-        !pagination ||
+        !(searchInput instanceof HTMLInputElement) ||
+        !(categorySelect instanceof HTMLSelectElement) ||
+        !(pagination instanceof HTMLElement) ||
         !(postList instanceof HTMLElement)
       ) {
         return;
       }
-
-      if (postList.dataset.bound === "true") {
-        return;
-      }
-
-      postList.dataset.bound = "true";
 
       const params = new URLSearchParams(window.location.search);
       let activeCategory = (params.get("category") ?? "").toLowerCase();
