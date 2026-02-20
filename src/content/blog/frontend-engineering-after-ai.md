@@ -1,6 +1,6 @@
 ---
 title: "Frontend Engineering After AI: The Work Shifted Up the Stack"
-description: AI can generate UI quickly, but product quality still depends on engineers who can design state, reliability, and user experience under real constraints.
+description: AI can generate UI in seconds, but real product quality depends on engineers who understand state architecture, data synchronization, performance trade-offs, and reliability under real-world constraints. This post explores why frontend is evolving from component building to systems design and what skills now matter most.
 publishedDate: 2026-02-20
 author: Bibek Joshi
 tags:
@@ -9,6 +9,7 @@ tags:
   - Software Engineering
   - Career Strategy
 category: Career Strategy
+featuredImage: ./images/frontend_engineering_after_ai.png
 draft: false
 ---
 
