@@ -11,7 +11,6 @@ tags:
 category: Career Strategy
 featuredImage: ./images/frontend-authority.png
 draft: false
-featured: true
 ---
 
 Great technical writing is not about sounding smart. It is about reducing ambiguity for someone who needs to ship.

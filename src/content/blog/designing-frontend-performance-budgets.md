@@ -11,7 +11,6 @@ tags:
 category: Performance
 featuredImage: ./images/performance-budgets.png
 draft: false
-featured: true
 ---
 
 Most teams do not have a tooling problem with performance budgets. They have a product-prioritization problem.

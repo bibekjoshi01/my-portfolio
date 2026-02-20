@@ -1,5 +1,5 @@
 ---
-import { Image } from "astro:assets";
+import { Image, type LocalImageProps } from "astro:assets";
 import TagBadge from "@components/TagBadge.astro";
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
   readingTime: string;
   tags: string[];
   category: string;
-  featuredImage: ImageMetadata;
+  featuredImage?: LocalImageProps["src"];
 }
 
 const {
@@ -40,15 +40,26 @@ const updatedDateLabel = updatedDate
 ---
 
 <article class="space-y-8">
-  <Image
-    src={featuredImage}
-    alt={title}
-    class="reading-surface h-[280px] w-full object-cover sm:h-[380px]"
-    widths={[900, 1200, 1600]}
-    sizes="(max-width: 768px) 100vw, 768px"
-    loading="eager"
-    format="webp"
-  />
+  {
+    featuredImage ? (
+      <Image
+        src={featuredImage}
+        alt={title}
+        class="reading-surface h-[280px] w-full object-cover sm:h-[380px]"
+        widths={[900, 1200, 1600]}
+        sizes="(max-width: 768px) 100vw, 768px"
+        loading="eager"
+        format="webp"
+      />
+    ) : (
+      <img
+        src="/og-default.svg"
+        alt={title}
+        class="reading-surface h-[280px] w-full object-cover sm:h-[380px]"
+        loading="eager"
+      />
+    )
+  }
 
   <header class="space-y-5">
     <div class="space-y-3">

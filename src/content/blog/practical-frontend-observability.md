@@ -10,7 +10,6 @@ tags:
 category: Reliability
 featuredImage: ./images/frontend-observability.png
 draft: false
-featured: false
 ---
 
 Frontend observability is not about collecting every event. It is about making incident diagnosis fast enough that customers do not feel the blast radius.

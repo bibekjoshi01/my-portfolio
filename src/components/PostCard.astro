@@ -10,7 +10,7 @@ interface Props {
   readingTime: string;
   tags: string[];
   category: string;
-  featuredImage: LocalImageProps['src'];
+  featuredImage?: LocalImageProps["src"];
   featured?: boolean;
 }
 
@@ -44,15 +44,24 @@ const categoryHref = `/blog?category=${encodeURIComponent(category)}`;
   class="group reading-surface overflow-hidden"
 >
   <a href={`/blog/${slug}/`} class="block overflow-hidden" aria-label={`Read ${title}`}>
-    <Image
-      src={featuredImage}
-      alt={title}
-      class="h-52 w-full object-cover transition duration-500 group-hover:scale-[1.02]"
-      widths={[600, 900, 1200]}
-      sizes="(max-width: 768px) 100vw, 760px"
-      loading="lazy"
-      format="webp"
-    />
+    {featuredImage ? (
+      <Image
+        src={featuredImage}
+        alt={title}
+        class="h-52 w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+        widths={[600, 900, 1200]}
+        sizes="(max-width: 768px) 100vw, 760px"
+        loading="lazy"
+        format="webp"
+      />
+    ) : (
+      <img
+        src="/og-default.svg"
+        alt={title}
+        class="h-52 w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+        loading="lazy"
+      />
+    )}
   </a>
 
   <div class="space-y-4 p-6">
