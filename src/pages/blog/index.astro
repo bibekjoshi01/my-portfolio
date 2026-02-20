@@ -4,7 +4,6 @@ import CategoryFilter from "@components/CategoryFilter.astro";
 import PostCard from "@components/PostCard.astro";
 import {
   getAllCategories,
-  getAllTags,
   getPostReadingTime,
   getPublishedPosts,
 } from "@utils/blog";
@@ -12,7 +11,6 @@ import { siteConfig } from "@data/site";
 
 const posts = await getPublishedPosts();
 const categories = getAllCategories(posts);
-const tags = getAllTags(posts);
 const blogUrl = new URL(
   "/blog/",
   Astro.site ?? new URL(siteConfig.url),
@@ -50,7 +48,6 @@ const blogJsonLd = [
     "Backend Engineering",
     "AI Systems",
     ...categories,
-    ...tags.slice(0, 12),
   ]}
   jsonLd={blogJsonLd}
 >
@@ -72,23 +69,6 @@ const blogJsonLd = [
           label="Category"
           hideLabel={true}
         />
-      </div>
-
-      <div class="flex flex-wrap gap-2">
-        {
-          tags.map((tag) => (
-            <button
-              type="button"
-              data-blog-tag-button
-              data-tag={tag.toLowerCase()}
-              data-active="false"
-              aria-label={`Filter by tag ${tag}`}
-              class="rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700 transition data-[active=true]:border-sky-500 data-[active=true]:bg-sky-600 data-[active=true]:text-white dark:border-slate-700 dark:text-slate-200 dark:data-[active=true]:border-sky-400 dark:data-[active=true]:bg-sky-500 dark:data-[active=true]:text-slate-900"
-            >
-              {tag}
-            </button>
-          ))
-        }
       </div>
 
       <div class="flex flex-wrap items-center justify-between gap-3">
@@ -156,9 +136,6 @@ const blogJsonLd = [
       const postList = root.querySelector("[data-blog-post-list]");
       const searchInput = root.querySelector("[data-blog-search]");
       const categorySelect = root.querySelector('[data-category-select="blog"]');
-      const tagButtons = Array.from(
-        root.querySelectorAll("[data-blog-tag-button]"),
-      );
       const cards =
         postList instanceof HTMLElement
           ? Array.from(postList.querySelectorAll("[data-post-card]"))
@@ -180,13 +157,6 @@ const blogJsonLd = [
 
       const params = new URLSearchParams(window.location.search);
       let activeCategory = (params.get("category") ?? "").toLowerCase();
-      const activeTags = new Set(
-        params
-          .getAll("tag")
-          .flatMap((item) => item.split(","))
-          .map((tag) => tag.trim().toLowerCase())
-          .filter(Boolean),
-      );
       let currentPage = Number(params.get("page") ?? "1");
 
       if (!Number.isFinite(currentPage) || currentPage < 1) {
@@ -203,13 +173,6 @@ const blogJsonLd = [
         }
       }
 
-      const syncTagButtons = () => {
-        tagButtons.forEach((button) => {
-          const value = (button.dataset.tag ?? "").toLowerCase();
-          button.dataset.active = activeTags.has(value) ? "true" : "false";
-        });
-      };
-
       const filterCards = () => {
         const query = searchInput.value.trim().toLowerCase();
 
@@ -223,9 +186,6 @@ const blogJsonLd = [
 
           const matchesCategory =
             !activeCategory || category === activeCategory;
-          const matchesTags =
-            !activeTags.size ||
-            [...activeTags].every((tag) => tags.includes(tag));
           const matchesQuery =
             !query ||
             title.includes(query) ||
@@ -233,7 +193,7 @@ const blogJsonLd = [
             tags.some((tag) => tag.includes(query)) ||
             category.includes(query);
 
-          return matchesCategory && matchesTags && matchesQuery;
+          return matchesCategory && matchesQuery;
         });
       };
 
@@ -243,8 +203,6 @@ const blogJsonLd = [
         if (activeCategory) {
           nextParams.set("category", activeCategory);
         }
-
-        [...activeTags].forEach((tag) => nextParams.append("tag", tag));
 
         if (searchInput.value.trim()) {
           nextParams.set("q", searchInput.value.trim());
@@ -355,36 +313,15 @@ const blogJsonLd = [
         render(true);
       });
 
-      tagButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-          const value = (button.dataset.tag ?? "").toLowerCase();
-          if (!value) {
-            return;
-          }
-
-          if (activeTags.has(value)) {
-            activeTags.delete(value);
-          } else {
-            activeTags.add(value);
-          }
-
-          syncTagButtons();
-          render(true);
-        });
-      });
-
       if (clearButton) {
         clearButton.addEventListener("click", () => {
           activeCategory = "";
-          activeTags.clear();
           categorySelect.value = "";
           searchInput.value = "";
-          syncTagButtons();
           render(true);
         });
       }
 
-      syncTagButtons();
       render();
     };
 
