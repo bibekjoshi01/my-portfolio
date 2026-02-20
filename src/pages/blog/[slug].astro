@@ -1,0 +1,109 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import BlogPostLayout from "@layouts/BlogPostLayout.astro";
+import NewsletterForm from "@components/NewsletterForm.astro";
+import RelatedPosts from "@components/RelatedPosts.astro";
+import CodeCopyEnhancer from "@components/CodeCopyEnhancer.astro";
+import { siteConfig } from "@data/site";
+import {
+  getPostReadingTime,
+  getPublishedPosts,
+  type BlogEntry,
+} from "@utils/blog";
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props as { post: BlogEntry };
+const { Content } = await post.render();
+const readingTime = getPostReadingTime(post);
+
+const allPosts = await getPublishedPosts();
+const relatedPosts = allPosts
+  .filter((candidate) => candidate.slug !== post.slug)
+  .map((candidate) => {
+    const overlap = candidate.data.tags.filter((tag) =>
+      post.data.tags.includes(tag),
+    ).length;
+    return { candidate, overlap };
+  })
+  .filter(({ overlap }) => overlap > 0)
+  .sort((a, b) => {
+    if (b.overlap !== a.overlap) {
+      return b.overlap - a.overlap;
+    }
+
+    return (
+      b.candidate.data.publishedDate.getTime() -
+      a.candidate.data.publishedDate.getTime()
+    );
+  })
+  .slice(0, 3)
+  .map(({ candidate }) => candidate);
+
+const postUrl = new URL(
+  `/blog/${post.slug}/`,
+  Astro.site ?? new URL(siteConfig.url),
+).toString();
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.publishedDate.toISOString(),
+  ...(post.data.updatedDate
+    ? {
+        dateModified: post.data.updatedDate.toISOString(),
+      }
+    : {}),
+  author: {
+    "@type": "Person",
+    name: post.data.author,
+  },
+  image: new URL(
+    post.data.featuredImage.src,
+    Astro.site ?? new URL(siteConfig.url),
+  ).toString(),
+  mainEntityOfPage: postUrl,
+};
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  ogImage={post.data.featuredImage.src}
+  canonical={postUrl}
+  type="article"
+  jsonLd={jsonLd}
+>
+  <section class="mx-auto max-w-5xl space-y-12">
+    <BlogPostLayout
+      title={post.data.title}
+      description={post.data.description}
+      publishedDate={post.data.publishedDate}
+      updatedDate={post.data.updatedDate}
+      readingTime={readingTime}
+      tags={post.data.tags}
+      category={post.data.category}
+      featuredImage={post.data.featuredImage}
+    >
+      <Content />
+    </BlogPostLayout>
+
+    <CodeCopyEnhancer />
+
+    <RelatedPosts posts={relatedPosts} />
+    <NewsletterForm
+      formId={`newsletter-post-${post.slug}`}
+      title="Subscribe for New Articles"
+      description="Get the next deep dive directly in your inbox."
+    />
+  </section>
+</BaseLayout>

@@ -1,0 +1,50 @@
+---
+interface Props {
+  categories: string[];
+  id: string;
+  mode?: 'buttons' | 'select';
+  label?: string;
+}
+
+const { categories, id, mode = 'buttons', label = 'Category' } = Astro.props;
+---
+
+{
+  mode === 'buttons' ? (
+    <div class="flex flex-wrap gap-2" data-category-group={id}>
+      <button
+        type="button"
+        data-category-button={id}
+        data-category=""
+        data-active="true"
+        class="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition data-[active=true]:border-slate-900 data-[active=true]:bg-slate-900 data-[active=true]:text-white dark:border-slate-700 dark:text-slate-200 dark:data-[active=true]:border-slate-100 dark:data-[active=true]:bg-slate-100 dark:data-[active=true]:text-slate-900"
+      >
+        All
+      </button>
+      {categories.map((category) => (
+        <button
+          type="button"
+          data-category-button={id}
+          data-category={category}
+          data-active="false"
+          class="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition data-[active=true]:border-slate-900 data-[active=true]:bg-slate-900 data-[active=true]:text-white dark:border-slate-700 dark:text-slate-200 dark:data-[active=true]:border-slate-100 dark:data-[active=true]:bg-slate-100 dark:data-[active=true]:text-slate-900"
+        >
+          {category}
+        </button>
+      ))}
+    </div>
+  ) : (
+    <label class="flex flex-col gap-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+      {label}
+      <select
+        data-category-select={id}
+        class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm text-slate-700 outline-none ring-sky-500 transition focus:ring-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+      >
+        <option value="">All categories</option>
+        {categories.map((category) => (
+          <option value={category}>{category}</option>
+        ))}
+      </select>
+    </label>
+  )
+}

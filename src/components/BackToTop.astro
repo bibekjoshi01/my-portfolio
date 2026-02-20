@@ -1,0 +1,35 @@
+<button
+  type="button"
+  data-back-to-top
+  aria-label="Back to top"
+  class="pointer-events-none fixed bottom-6 right-6 z-40 rounded-full border border-slate-300 bg-white/90 px-4 py-2 text-sm font-medium text-slate-700 opacity-0 transition dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-200"
+>
+  Top
+</button>
+
+<script is:inline>
+  const initializeBackToTop = () => {
+    const button = document.querySelector('[data-back-to-top]');
+    if (!button || button.dataset.bound === 'true') {
+      return;
+    }
+
+    button.dataset.bound = 'true';
+
+    const toggleVisibility = () => {
+      const shouldShow = window.scrollY > 380;
+      button.classList.toggle('opacity-0', !shouldShow);
+      button.classList.toggle('pointer-events-none', !shouldShow);
+    };
+
+    toggleVisibility();
+    window.addEventListener('scroll', toggleVisibility, { passive: true });
+
+    button.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  };
+
+  initializeBackToTop();
+  document.addEventListener('astro:page-load', initializeBackToTop);
+</script>

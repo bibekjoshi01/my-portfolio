@@ -1,0 +1,110 @@
+---
+interface Props {
+  formId: string;
+  title?: string;
+  description?: string;
+}
+
+const {
+  formId,
+  title = 'Subscribe for practical engineering notes',
+  description = 'One focused email when a new article is published. No spam.',
+} = Astro.props;
+---
+
+<section class="reading-surface space-y-5 p-6">
+  <div class="space-y-2">
+    <h2 class="text-2xl font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
+    <p class="text-base text-slate-600 dark:text-slate-300">{description}</p>
+  </div>
+
+  <form id={formId} class="flex flex-col gap-3 sm:flex-row" novalidate>
+    <label for={`${formId}-email`} class="sr-only">Email address</label>
+    <input
+      id={`${formId}-email`}
+      type="email"
+      name="email"
+      placeholder="you@company.com"
+      required
+      class="h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-500/30 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+    />
+    <button
+      type="submit"
+      class="h-11 rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+    >
+      Subscribe
+    </button>
+  </form>
+
+  <p data-newsletter-status={formId} class="min-h-6 text-sm text-slate-600 dark:text-slate-300" aria-live="polite"></p>
+</section>
+
+<script is:inline define:vars={{ formId }}>
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const NEWSLETTER_STORAGE_KEY = 'newsletter-subscribers.json';
+
+  const initializeNewsletter = () => {
+    const form = document.getElementById(formId);
+    if (!(form instanceof HTMLFormElement) || form.dataset.bound === 'true') {
+      return;
+    }
+
+    form.dataset.bound = 'true';
+
+    const status = document.querySelector(`[data-newsletter-status="${formId}"]`);
+    const emailInput = form.querySelector('input[name="email"]');
+
+    if (!status || !(emailInput instanceof HTMLInputElement)) {
+      return;
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const email = emailInput.value.trim();
+      const normalizedEmail = email.toLowerCase();
+
+      if (!EMAIL_REGEX.test(email)) {
+        status.textContent = 'Please enter a valid email address.';
+        status.className =
+          'min-h-6 text-sm text-rose-600 dark:text-rose-400';
+        return;
+      }
+
+      status.textContent = 'Saving...';
+      status.className = 'min-h-6 text-sm text-slate-600 dark:text-slate-300';
+
+      try {
+        const currentValue = localStorage.getItem(NEWSLETTER_STORAGE_KEY);
+        let subscribers = [];
+
+        if (currentValue) {
+          const parsed = JSON.parse(currentValue);
+          if (Array.isArray(parsed)) {
+            subscribers = parsed.filter((item) => typeof item === 'string');
+          }
+        }
+
+        if (subscribers.includes(normalizedEmail)) {
+          status.textContent = 'Already subscribed.';
+          status.className = 'min-h-6 text-sm text-amber-700 dark:text-amber-400';
+          return;
+        }
+
+        const nextSubscribers = [...subscribers, normalizedEmail];
+        localStorage.setItem(NEWSLETTER_STORAGE_KEY, JSON.stringify(nextSubscribers));
+
+        form.reset();
+        status.textContent = 'Subscribed successfully.';
+        status.className =
+          'min-h-6 text-sm text-emerald-700 dark:text-emerald-400';
+      } catch (error) {
+        status.textContent = 'Unable to save subscription right now.';
+        status.className = 'min-h-6 text-sm text-rose-600 dark:text-rose-400';
+      }
+    });
+  };
+
+  initializeNewsletter();
+  document.addEventListener('astro:page-load', initializeNewsletter);
+</script>

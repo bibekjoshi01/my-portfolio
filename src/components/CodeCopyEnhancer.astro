@@ -1,0 +1,112 @@
+<script is:inline>
+  const PROTECTION_KEY = '__postContentProtectionBound';
+
+  const targetToElement = (target) => {
+    if (target instanceof Element) {
+      return target;
+    }
+
+    if (target instanceof Node) {
+      return target.parentElement;
+    }
+
+    return null;
+  };
+
+  const isInsidePostContent = (target) => {
+    const element = targetToElement(target);
+    return Boolean(element?.closest('article .prose'));
+  };
+
+  const installPostProtection = () => {
+    if (window[PROTECTION_KEY]) {
+      return;
+    }
+
+    window[PROTECTION_KEY] = true;
+
+    document.addEventListener('contextmenu', (event) => {
+      if (isInsidePostContent(event.target)) {
+        event.preventDefault();
+      }
+    });
+
+    document.addEventListener('selectstart', (event) => {
+      if (isInsidePostContent(event.target)) {
+        event.preventDefault();
+      }
+    });
+
+    const blockNativeCopy = (event) => {
+      const selection = window.getSelection();
+      const anchorElement = selection ? targetToElement(selection.anchorNode) : null;
+
+      if (anchorElement?.closest('article .prose')) {
+        event.preventDefault();
+      }
+    };
+
+    document.addEventListener('copy', blockNativeCopy);
+    document.addEventListener('cut', blockNativeCopy);
+  };
+
+  const attachCodeCopy = () => {
+    const codeBlocks = document.querySelectorAll('article .prose pre');
+
+    codeBlocks.forEach((block) => {
+      if (!(block instanceof HTMLElement) || block.dataset.copyReady === 'true') {
+        return;
+      }
+
+      block.dataset.copyReady = 'true';
+      block.tabIndex = 0;
+      block.setAttribute('role', 'button');
+      block.setAttribute('aria-label', 'Copy code snippet');
+
+      const feedback = document.createElement('span');
+      feedback.className = 'code-copy-feedback';
+      feedback.dataset.visible = 'false';
+      block.append(feedback);
+
+      const showFeedback = (message, error = false) => {
+        feedback.textContent = message;
+        feedback.dataset.visible = 'true';
+        feedback.dataset.error = error ? 'true' : 'false';
+
+        window.clearTimeout(Number(block.dataset.feedbackTimeout ?? 0));
+        const timeoutId = window.setTimeout(() => {
+          feedback.dataset.visible = 'false';
+        }, 1500);
+        block.dataset.feedbackTimeout = String(timeoutId);
+      };
+
+      const copyFromBlock = async () => {
+        const code = block.querySelector('code');
+        const text = code?.textContent?.trimEnd() ?? '';
+
+        if (!text) {
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(text);
+          showFeedback('Copied');
+        } catch (error) {
+          showFeedback('Copy failed', true);
+        }
+      };
+
+      block.addEventListener('click', copyFromBlock);
+      block.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          copyFromBlock();
+        }
+      });
+    });
+  };
+
+  installPostProtection();
+  attachCodeCopy();
+  document.addEventListener('astro:page-load', attachCodeCopy);
+</script>

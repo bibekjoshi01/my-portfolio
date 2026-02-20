@@ -1,0 +1,110 @@
+---
+import { Image } from "astro:assets";
+import TagBadge from "@components/TagBadge.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  publishedDate: Date;
+  updatedDate?: Date;
+  readingTime: string;
+  tags: string[];
+  category: string;
+  featuredImage: ImageMetadata;
+}
+
+const {
+  title,
+  description,
+  publishedDate,
+  updatedDate,
+  readingTime,
+  tags,
+  category,
+  featuredImage,
+} = Astro.props;
+
+const publishedDateLabel = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+}).format(publishedDate);
+
+const updatedDateLabel = updatedDate
+  ? new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    }).format(updatedDate)
+  : null;
+---
+
+<article class="space-y-8">
+  <Image
+    src={featuredImage}
+    alt={title}
+    class="reading-surface h-[280px] w-full object-cover sm:h-[380px]"
+    widths={[900, 1200, 1600]}
+    sizes="(max-width: 768px) 100vw, 768px"
+    loading="eager"
+    format="webp"
+  />
+
+  <header class="space-y-5">
+    <div class="space-y-3">
+      <p
+        class="text-sm font-semibold uppercase tracking-[0.12em] text-sky-700 dark:text-sky-300"
+      >
+        {category}
+      </p>
+      <h1
+        class="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50 sm:text-5xl"
+      >
+        {title}
+      </h1>
+      <p class="max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">
+        {description}
+      </p>
+    </div>
+
+    <div
+      class="flex flex-wrap items-center gap-3 text-sm text-slate-500 dark:text-slate-400"
+    >
+      <time datetime={publishedDate.toISOString()}
+        >Published {publishedDateLabel}</time
+      >
+      {
+        updatedDate && (
+          <>
+            <span aria-hidden="true">•</span>
+            <time datetime={updatedDate.toISOString()}>
+              Updated {updatedDateLabel}
+            </time>
+          </>
+        )
+      }
+      <span aria-hidden="true">•</span>
+      <span>{readingTime}</span>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <a
+        href={`/blog?category=${encodeURIComponent(category)}`}
+        class="inline-flex items-center rounded-full border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 hover:border-sky-400 hover:text-sky-700 dark:border-slate-700 dark:text-slate-300 dark:hover:border-sky-400 dark:hover:text-sky-300"
+      >
+        {category}
+      </a>
+      {
+        tags.map((tag) => (
+          <TagBadge label={tag} href={`/blog?tag=${encodeURIComponent(tag)}`} />
+        ))
+      }
+    </div>
+  </header>
+
+  <section class="p-6 sm:p-10">
+    <article class="prose prose-slate max-w-none dark:prose-invert">
+      <slot />
+    </article>
+  </section>
+</article>

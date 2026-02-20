@@ -1,0 +1,26 @@
+{
+  "name": "personal-technical-blog",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
+    "start": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
+    "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
+    "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/rss": "latest",
+    "@astrojs/sitemap": "latest",
+    "@astrojs/tailwind": "latest",
+    "@tailwindcss/typography": "latest",
+    "astro": "latest",
+    "tailwindcss": "latest"
+  },
+  "devDependencies": {
+    "autoprefixer": "latest",
+    "postcss": "latest",
+    "typescript": "latest"
+  }
+}

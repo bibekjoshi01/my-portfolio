@@ -1,0 +1,362 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import CategoryFilter from "@components/CategoryFilter.astro";
+import PostCard from "@components/PostCard.astro";
+import {
+  getAllCategories,
+  getAllTags,
+  getPostReadingTime,
+  getPublishedPosts,
+} from "@utils/blog";
+
+const posts = await getPublishedPosts();
+const categories = getAllCategories(posts);
+const tags = getAllTags(posts);
+---
+
+<BaseLayout
+  title="Blog"
+  description="Latest technical blog posts, organized by category, tags, and search."
+>
+  <section class="space-y-8">
+    <header class="space-y-3">
+      <p
+        class="text-sm font-semibold uppercase tracking-[0.12em] text-sky-700 dark:text-sky-300"
+      >
+        Latest Writing
+      </p>
+      <h1
+        class="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50 sm:text-5xl"
+      >
+        Latest Posts
+      </h1>
+      <p class="max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">
+        Browse by category, combine tags, and search instantly across the newest
+        posts.
+      </p>
+    </header>
+
+    <section class="reading-surface space-y-5 p-5 sm:p-6">
+      <div class="grid gap-4 md:grid-cols-2">
+        <label
+          class="flex flex-col gap-2 text-sm font-medium text-slate-700 dark:text-slate-200"
+        >
+          Search
+          <input
+            type="search"
+            data-blog-search
+            placeholder="Search posts"
+            class="h-11 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-500/30 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+          />
+        </label>
+
+        <CategoryFilter
+          categories={categories}
+          id="blog"
+          mode="select"
+          label="Category"
+        />
+      </div>
+
+      <div class="space-y-2">
+        <p class="text-sm font-medium text-slate-700 dark:text-slate-200">
+          Tags (multi-select)
+        </p>
+        <div class="flex flex-wrap gap-2">
+          {
+            tags.map((tag) => (
+              <button
+                type="button"
+                data-blog-tag-button
+                data-tag={tag.toLowerCase()}
+                data-active="false"
+                class="rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700 transition data-[active=true]:border-sky-500 data-[active=true]:bg-sky-600 data-[active=true]:text-white dark:border-slate-700 dark:text-slate-200 dark:data-[active=true]:border-sky-400 dark:data-[active=true]:bg-sky-500 dark:data-[active=true]:text-slate-900"
+              >
+                {tag}
+              </button>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <p data-blog-results class="text-sm text-slate-600 dark:text-slate-300">
+          {posts.length} posts found
+        </p>
+        <button
+          type="button"
+          data-clear-filters
+          class="text-sm font-medium text-sky-700 hover:text-sky-500 dark:text-sky-300 dark:hover:text-sky-200"
+        >
+          Clear filters
+        </button>
+      </div>
+    </section>
+
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3" data-blog-post-list>
+      {
+        posts.map((post) => (
+          <PostCard
+            slug={post.slug}
+            title={post.data.title}
+            description={post.data.description}
+            publishedDate={post.data.publishedDate}
+            readingTime={getPostReadingTime(post)}
+            tags={post.data.tags}
+            category={post.data.category}
+            featuredImage={post.data.featuredImage}
+            featured={post.data.featured}
+          />
+        ))
+      }
+    </div>
+
+    <p
+      data-blog-empty
+      class="hidden rounded-xl border border-dashed border-slate-300 p-6 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-300"
+    >
+      No posts match your filters.
+    </p>
+
+    <nav
+      data-blog-pagination
+      class="flex flex-wrap items-center justify-center gap-2"
+      aria-label="Pagination"
+    >
+    </nav>
+  </section>
+
+  <script is:inline>
+    const initializeBlogFilters = () => {
+      const PER_PAGE = 10;
+      const searchInput = document.querySelector("[data-blog-search]");
+      const categorySelect = document.querySelector(
+        '[data-category-select="blog"]',
+      );
+      const tagButtons = Array.from(
+        document.querySelectorAll("[data-blog-tag-button]"),
+      );
+      const cards = Array.from(
+        document.querySelectorAll("[data-blog-post-list] [data-post-card]"),
+      );
+      const resultsText = document.querySelector("[data-blog-results]");
+      const emptyState = document.querySelector("[data-blog-empty]");
+      const pagination = document.querySelector("[data-blog-pagination]");
+      const clearButton = document.querySelector("[data-clear-filters]");
+
+      if (!cards.length || !searchInput || !categorySelect || !pagination) {
+        return;
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      let activeCategory = (params.get("category") ?? "").toLowerCase();
+      const activeTags = new Set(
+        params
+          .getAll("tag")
+          .flatMap((item) => item.split(","))
+          .map((tag) => tag.trim().toLowerCase())
+          .filter(Boolean),
+      );
+      let currentPage = Number(params.get("page") ?? "1");
+
+      if (!Number.isFinite(currentPage) || currentPage < 1) {
+        currentPage = 1;
+      }
+
+      if (activeCategory) {
+        const matchingOption = Array.from(categorySelect.options).find(
+          (option) => option.value.toLowerCase() === activeCategory,
+        );
+
+        if (matchingOption) {
+          categorySelect.value = matchingOption.value;
+        }
+      }
+
+      const syncTagButtons = () => {
+        tagButtons.forEach((button) => {
+          const value = (button.dataset.tag ?? "").toLowerCase();
+          button.dataset.active = activeTags.has(value) ? "true" : "false";
+        });
+      };
+
+      const filterCards = () => {
+        const query = searchInput.value.trim().toLowerCase();
+
+        return cards.filter((card) => {
+          const title = card.dataset.title ?? "";
+          const description = card.dataset.description ?? "";
+          const category = card.dataset.category ?? "";
+          const tags = (card.dataset.tags ?? "")
+            .split(",")
+            .map((item) => item.trim());
+
+          const matchesCategory =
+            !activeCategory || category === activeCategory;
+          const matchesTags =
+            !activeTags.size ||
+            [...activeTags].every((tag) => tags.includes(tag));
+          const matchesQuery =
+            !query ||
+            title.includes(query) ||
+            description.includes(query) ||
+            tags.some((tag) => tag.includes(query)) ||
+            category.includes(query);
+
+          return matchesCategory && matchesTags && matchesQuery;
+        });
+      };
+
+      const updateUrl = (totalPages) => {
+        const nextParams = new URLSearchParams();
+
+        if (activeCategory) {
+          nextParams.set("category", activeCategory);
+        }
+
+        [...activeTags].forEach((tag) => nextParams.append("tag", tag));
+
+        if (searchInput.value.trim()) {
+          nextParams.set("q", searchInput.value.trim());
+        }
+
+        if (currentPage > 1 && currentPage <= totalPages) {
+          nextParams.set("page", String(currentPage));
+        }
+
+        const query = nextParams.toString();
+        const nextUrl = query
+          ? `${window.location.pathname}?${query}`
+          : window.location.pathname;
+        history.replaceState({}, "", nextUrl);
+      };
+
+      const renderPagination = (totalPages) => {
+        pagination.innerHTML = "";
+
+        if (totalPages <= 1) {
+          return;
+        }
+
+        const createButton = (
+          label,
+          page,
+          disabled = false,
+          active = false,
+        ) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.textContent = label;
+          button.disabled = disabled;
+          button.className =
+            "rounded-lg border px-3 py-1.5 text-sm font-medium transition " +
+            (active
+              ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
+              : "border-slate-300 text-slate-700 hover:border-sky-400 hover:text-sky-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300") +
+            (disabled ? " cursor-not-allowed opacity-50" : "");
+
+          if (!disabled) {
+            button.addEventListener("click", () => {
+              currentPage = page;
+              render();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+          }
+
+          pagination.append(button);
+        };
+
+        createButton("Prev", Math.max(1, currentPage - 1), currentPage === 1);
+
+        for (let page = 1; page <= totalPages; page += 1) {
+          createButton(String(page), page, false, page === currentPage);
+        }
+
+        createButton(
+          "Next",
+          Math.min(totalPages, currentPage + 1),
+          currentPage === totalPages,
+        );
+      };
+
+      const render = (resetPage = false) => {
+        if (resetPage) {
+          currentPage = 1;
+        }
+
+        const filtered = filterCards();
+        const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+
+        if (currentPage > totalPages) {
+          currentPage = totalPages;
+        }
+
+        cards.forEach((card) => card.classList.add("hidden"));
+
+        const start = (currentPage - 1) * PER_PAGE;
+        const end = start + PER_PAGE;
+        filtered
+          .slice(start, end)
+          .forEach((card) => card.classList.remove("hidden"));
+
+        if (resultsText) {
+          resultsText.textContent = `${filtered.length} post${filtered.length === 1 ? "" : "s"} found`;
+        }
+
+        if (emptyState) {
+          emptyState.classList.toggle("hidden", filtered.length !== 0);
+        }
+
+        renderPagination(totalPages);
+        updateUrl(totalPages);
+      };
+
+      const initialQuery = params.get("q");
+      if (initialQuery) {
+        searchInput.value = initialQuery;
+      }
+
+      searchInput.addEventListener("input", () => render(true));
+
+      categorySelect.addEventListener("change", () => {
+        activeCategory = categorySelect.value.toLowerCase();
+        render(true);
+      });
+
+      tagButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const value = (button.dataset.tag ?? "").toLowerCase();
+          if (!value) {
+            return;
+          }
+
+          if (activeTags.has(value)) {
+            activeTags.delete(value);
+          } else {
+            activeTags.add(value);
+          }
+
+          syncTagButtons();
+          render(true);
+        });
+      });
+
+      if (clearButton) {
+        clearButton.addEventListener("click", () => {
+          activeCategory = "";
+          activeTags.clear();
+          categorySelect.value = "";
+          searchInput.value = "";
+          syncTagButtons();
+          render(true);
+        });
+      }
+
+      syncTagButtons();
+      render();
+    };
+
+    initializeBlogFilters();
+    document.addEventListener("astro:page-load", initializeBlogFilters);
+  </script>
+</BaseLayout>

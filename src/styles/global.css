@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  scroll-behavior: smooth;
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
+body {
+  @apply m-0 min-h-screen bg-surface-light font-sans text-slate-800 antialiased transition-colors duration-300;
+}
+
+.dark body {
+  @apply bg-surface-dark text-slate-200;
+}
+
+a {
+  @apply transition-colors duration-200;
+}
+
+.container-shell {
+  @apply mx-auto w-full max-w-7xl px-5;
+}
+
+.reading-surface {
+  @apply rounded-3xl border border-slate-200 bg-white/90 backdrop-blur;
+}
+
+.dark .reading-surface {
+  @apply border-slate-800 bg-slate-900/90;
+}
+
+.prose {
+  @apply font-serif text-lg leading-8;
+}
+
+.prose,
+.prose * {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  @apply font-sans text-slate-900;
+}
+
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4 {
+  @apply text-slate-100;
+}
+
+.prose blockquote {
+  @apply rounded-r-lg border-l-4 border-sky-500 bg-sky-50/80 px-5 py-3 font-sans not-italic text-slate-700;
+}
+
+.dark .prose blockquote {
+  @apply bg-sky-500/10 text-slate-200;
+}
+
+.prose pre {
+  @apply relative cursor-copy rounded-xl border border-slate-200 bg-slate-950 p-4;
+}
+
+.dark .prose pre {
+  @apply border-slate-700;
+}
+
+.prose :not(pre) > code {
+  @apply rounded bg-slate-100 px-1.5 py-0.5 font-mono text-sm text-slate-800;
+}
+
+.dark .prose :not(pre) > code {
+  @apply bg-slate-800 text-slate-100;
+}
+
+.code-copy-feedback {
+  @apply pointer-events-none absolute right-3 top-3 rounded-md border border-slate-700 bg-slate-800/90 px-2 py-1 text-xs font-medium text-slate-100 opacity-0 transition;
+}
+
+.code-copy-feedback[data-visible='true'] {
+  @apply opacity-100;
+}
+
+.code-copy-feedback[data-error='true'] {
+  @apply border-rose-500 bg-rose-600;
+}
+
+.prose table {
+  @apply w-full overflow-hidden rounded-xl border border-slate-200 text-sm;
+}
+
+.dark .prose table {
+  @apply border-slate-700;
+}
+
+.prose thead {
+  @apply bg-slate-100;
+}
+
+.dark .prose thead {
+  @apply bg-slate-800;
+}

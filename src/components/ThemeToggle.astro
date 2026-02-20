@@ -1,0 +1,48 @@
+<button
+  type="button"
+  aria-label="Toggle theme"
+  data-theme-toggle
+  class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 text-slate-700 transition hover:border-sky-400 hover:text-sky-600 dark:border-slate-700 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
+>
+  <span data-theme-icon>☀</span>
+</button>
+
+<script is:inline>
+  const THEME_STORAGE_KEY = 'theme-preference';
+
+  const applyTheme = (theme) => {
+    const root = document.documentElement;
+    const dark = theme === 'dark';
+    root.classList.toggle('dark', dark);
+
+    const icon = document.querySelector('[data-theme-icon]');
+    if (icon) {
+      icon.textContent = dark ? '☾' : '☀';
+    }
+  };
+
+  const initializeThemeToggle = () => {
+    const toggle = document.querySelector('[data-theme-toggle]');
+    if (!toggle || toggle.dataset.bound === 'true') {
+      return;
+    }
+
+    toggle.dataset.bound = 'true';
+
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(saved ?? (prefersDark ? 'dark' : 'light'));
+
+    toggle.addEventListener('click', () => {
+      const nextTheme = document.documentElement.classList.contains('dark')
+        ? 'light'
+        : 'dark';
+
+      localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+      applyTheme(nextTheme);
+    });
+  };
+
+  initializeThemeToggle();
+  document.addEventListener('astro:page-load', initializeThemeToggle);
+</script>
