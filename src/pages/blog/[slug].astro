@@ -83,7 +83,7 @@ const jsonLd = {
   type="article"
   jsonLd={jsonLd}
 >
-  <section class="mx-auto max-w-5xl space-y-12">
+  <section class="mx-auto max-w-4xl space-y-12">
     <BlogPostLayout
       title={post.data.title}
       description={post.data.description}
@@ -100,10 +100,12 @@ const jsonLd = {
     <CodeCopyEnhancer />
 
     <RelatedPosts posts={relatedPosts} />
-    <NewsletterForm
-      formId={`newsletter-post-${post.slug}`}
-      title="Subscribe for New Articles"
-      description="Get the next deep dive directly in your inbox."
-    />
+    <div class="mx-auto w-full max-w-2xl">
+      <NewsletterForm
+        formId={`newsletter-post-${post.slug}`}
+        title="Subscribe for New Articles"
+        description="Get the next deep dive directly in your inbox."
+      />
+    </div>
   </section>
 </BaseLayout>

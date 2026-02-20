@@ -54,7 +54,7 @@ const getIconPath = (label: string) =>
 >
   <section class="space-y-12">
     <header
-      class="reading-surface grid gap-6 p-6 sm:p-8 lg:grid-cols-[220px,1fr] lg:items-center"
+      class="reading-surface grid gap-5 px-5 py-6 sm:px-6 sm:py-7 lg:grid-cols-[220px,1fr] lg:items-center lg:pr-4"
     >
       <img
         src={author.avatar}
@@ -79,15 +79,8 @@ const getIconPath = (label: string) =>
         <p class="text-base font-semibold text-slate-700 dark:text-slate-200">
           {author.role}
         </p>
-        <p
-          class="max-w-3xl text-lg leading-8 text-slate-600 dark:text-slate-300"
-        >
+        <p class="text-lg leading-8 text-slate-600 dark:text-slate-300">
           {author.bio}
-        </p>
-        <p
-          class="max-w-3xl text-base leading-7 text-slate-600 dark:text-slate-300"
-        >
-          {siteConfig.tagline}
         </p>
 
         <div class="flex flex-wrap items-center gap-3">
@@ -113,18 +106,6 @@ const getIconPath = (label: string) =>
                 {social.label}
               </a>
             ))
-          }
-          {
-            author.portfolioUrl && (
-              <a
-                href={author.portfolioUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
-              >
-                Portfolio
-              </a>
-            )
           }
         </div>
       </div>

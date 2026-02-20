@@ -19,8 +19,8 @@ const fallbackAuthor: AuthorProfile = {
 export const authors: Record<string, AuthorProfile> = {
   "Bibek Joshi": {
     name: "Bibek Joshi",
-    role: "Senior Frontend Engineer",
-    bio: "I build reliable interfaces, scalable frontend systems, and engineering workflows that hold up in production.",
+    role: "Backend Engineer | AI Systems Integration | Scalable AI-Powered Applications",
+    bio: "I work at the intersection of AI engineering and backend systems, building scalable APIs, reliable architectures, and practical AI integrations that hold up in production. I focus on clean system design, performance-aware development, and engineering workflows that scale with complexity. I actively share what I learn, guide junior developers, and believe strong engineering grows through structured thinking, iteration, and collaborative problem-solving.",
     avatar: "/authors/bibek-joshi.jpeg",
     social: [
       { label: "GitHub", url: "https://github.com/bibekjoshi01" },
