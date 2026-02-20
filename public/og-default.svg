@@ -1,6 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
   <rect width="1200" height="630" fill="#0f172a"/>
   <rect x="70" y="70" width="1060" height="490" rx="26" fill="#111827" stroke="#334155"/>
-  <text x="140" y="280" fill="#f8fafc" font-family="Manrope, sans-serif" font-size="64" font-weight="700">Technical Writing</text>
-  <text x="140" y="355" fill="#94a3b8" font-family="Manrope, sans-serif" font-size="40">for frontend engineers who ship</text>
+  <text x="140" y="260" fill="#f8fafc" font-family="Manrope, sans-serif" font-size="64" font-weight="700">Bibek Joshi</text>
+  <text x="140" y="335" fill="#94a3b8" font-family="Manrope, sans-serif" font-size="36">Backend Engineering · AI Systems · Technical Writing</text>
+  <text x="140" y="405" fill="#64748b" font-family="Manrope, sans-serif" font-size="30">bibekjoshi01.com.np</text>
 </svg>

@@ -8,15 +8,51 @@ import {
   getPostReadingTime,
   getPublishedPosts,
 } from "@utils/blog";
+import { siteConfig } from "@data/site";
 
 const posts = await getPublishedPosts();
 const categories = getAllCategories(posts);
 const tags = getAllTags(posts);
+const blogUrl = new URL(
+  "/blog/",
+  Astro.site ?? new URL(siteConfig.url),
+).toString();
+const blogJsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: `${siteConfig.name} Blog`,
+    description: "Latest technical writing on backend engineering and AI systems.",
+    url: blogUrl,
+    inLanguage: siteConfig.language,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: posts.map((post, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: new URL(
+        `/blog/${post.slug}/`,
+        Astro.site ?? new URL(siteConfig.url),
+      ).toString(),
+      name: post.data.title,
+    })),
+  },
+];
 ---
 
 <BaseLayout
   title="Blog"
   description="Latest technical blog posts, organized by category, tags, and search."
+  keywords={[
+    "Blog",
+    "Backend Engineering",
+    "AI Systems",
+    ...categories,
+    ...tags.slice(0, 12),
+  ]}
+  jsonLd={blogJsonLd}
 >
   <section class="space-y-8">
     <section class="reading-surface space-y-5 p-5 sm:p-6">

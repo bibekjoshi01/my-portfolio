@@ -8,12 +8,19 @@ export type AuthorProfile = {
 };
 
 const fallbackAuthor: AuthorProfile = {
-  name: "Unknown Author",
-  role: "Engineer",
-  bio: "Engineer writing about practical software delivery.",
-  avatar: "/authors/default-author.svg",
-  social: [],
-  portfolioUrl: undefined,
+  name: "Bibek Joshi",
+  role: "Backend Engineer | AI Systems Integration | Scalable AI-Powered Applications",
+  bio: "I write about backend engineering, AI systems integration, and practical software delivery at production scale.",
+  avatar: "/authors/bibek-joshi.jpeg",
+  social: [
+    { label: "GitHub", url: "https://github.com/bibekjoshi01" },
+    {
+      label: "LinkedIn",
+      url: "https://www.linkedin.com/in/bibek-joshi-69458b231/",
+    },
+    { label: "YouTube", url: "https://www.youtube.com/@thealienprogrammer" },
+    { label: "Email", url: "mailto:bibekjoshi34@gmail.com" },
+  ],
 };
 
 export const authors: Record<string, AuthorProfile> = {

@@ -16,7 +16,7 @@ const homeJsonLd = [
     "@type": "WebSite",
     name: siteConfig.name,
     description: siteConfig.description,
-    url: Astro.site?.toString(),
+    url: Astro.site?.toString() ?? siteConfig.url,
   },
   {
     "@context": "https://schema.org",
@@ -28,7 +28,7 @@ const homeJsonLd = [
     sameAs: author.social
       .map((social) => social.url)
       .filter((url) => url.startsWith("http")),
-    ...(author.portfolioUrl ? { url: author.portfolioUrl } : {}),
+    url: author.portfolioUrl ?? siteConfig.url,
   },
 ];
 
@@ -50,6 +50,13 @@ const getIconPath = (label: string) =>
 <BaseLayout
   title="Home"
   description={siteConfig.description}
+  keywords={[
+    "Bibek Joshi",
+    "Backend Engineering",
+    "AI Systems Integration",
+    "System Design",
+    "Technical Blog",
+  ]}
   jsonLd={homeJsonLd}
 >
   <section class="space-y-12">

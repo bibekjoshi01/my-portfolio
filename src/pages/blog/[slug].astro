@@ -4,6 +4,7 @@ import BlogPostLayout from "@layouts/BlogPostLayout.astro";
 import NewsletterForm from "@components/NewsletterForm.astro";
 import RelatedPosts from "@components/RelatedPosts.astro";
 import CodeCopyEnhancer from "@components/CodeCopyEnhancer.astro";
+import { getAuthorProfile } from "@data/authors";
 import { siteConfig } from "@data/site";
 import {
   getPostReadingTime,
@@ -23,6 +24,9 @@ export async function getStaticPaths() {
 const { post } = Astro.props as { post: BlogEntry };
 const { Content } = await post.render();
 const readingTime = getPostReadingTime(post);
+const authorProfile = getAuthorProfile(post.data.author);
+const postKeywords = [post.data.category, ...post.data.tags];
+const wordCount = post.body.trim().split(/\s+/).filter(Boolean).length;
 
 const allPosts = await getPublishedPosts();
 const relatedPosts = allPosts
@@ -51,12 +55,18 @@ const postUrl = new URL(
   `/blog/${post.slug}/`,
   Astro.site ?? new URL(siteConfig.url),
 ).toString();
+const articleImageUrl = new URL(
+  post.data.featuredImage.src,
+  Astro.site ?? new URL(siteConfig.url),
+).toString();
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   headline: post.data.title,
   description: post.data.description,
+  url: postUrl,
+  inLanguage: siteConfig.language,
   datePublished: post.data.publishedDate.toISOString(),
   ...(post.data.updatedDate
     ? {
@@ -65,12 +75,24 @@ const jsonLd = {
     : {}),
   author: {
     "@type": "Person",
-    name: post.data.author,
+    name: authorProfile.name,
+    ...(authorProfile.social.length > 0
+      ? {
+          sameAs: authorProfile.social
+            .map((item) => item.url)
+            .filter((url) => url.startsWith("http")),
+        }
+      : {}),
   },
-  image: new URL(
-    post.data.featuredImage.src,
-    Astro.site ?? new URL(siteConfig.url),
-  ).toString(),
+  publisher: {
+    "@type": "Person",
+    name: siteConfig.name,
+    url: siteConfig.url,
+  },
+  articleSection: post.data.category,
+  keywords: postKeywords.join(", "),
+  wordCount,
+  image: articleImageUrl,
   mainEntityOfPage: postUrl,
 };
 ---
@@ -81,6 +103,13 @@ const jsonLd = {
   ogImage={post.data.featuredImage.src}
   canonical={postUrl}
   type="article"
+  keywords={postKeywords}
+  publishedTime={post.data.publishedDate.toISOString()}
+  modifiedTime={
+    post.data.updatedDate
+      ? post.data.updatedDate.toISOString()
+      : post.data.publishedDate.toISOString()
+  }
   jsonLd={jsonLd}
 >
   <section class="mx-auto max-w-4xl space-y-12">
