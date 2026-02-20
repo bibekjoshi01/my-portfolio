@@ -1,6 +1,6 @@
 # Personal Technical Blog (Astro)
 
-Production-ready personal technical blog built with Astro, TypeScript, TailwindCSS, and Markdown content collections.
+This is my personal technical blog built with Astro, TypeScript, TailwindCSS, and Markdown content collections.
 
 ## Stack
 
@@ -14,25 +14,32 @@ Production-ready personal technical blog built with Astro, TypeScript, TailwindC
 
 ## Run Locally
 
-1. Install dependencies:
+1. Use Node.js `20.3+`.
+2. Install dependencies:
 
 ```bash
 npm install
 ```
 
-2. Start dev server:
+3. Start dev server:
 
 ```bash
 npm run dev
 ```
 
-3. Build for production:
+4. Type check:
+
+```bash
+npm run check
+```
+
+5. Build for production:
 
 ```bash
 npm run build
 ```
 
-4. Preview production build:
+6. Preview production build:
 
 ```bash
 npm run preview
@@ -116,9 +123,16 @@ No `.env` file is required for local development, build, or deploy.
 
 ## Deploy to Vercel
 
-1. Push repository to Git provider.
-2. Import project in Vercel.
-3. Build command: `npm run build`
-4. Output directory: `dist`
+1. Push repository to your Git provider.
+2. Import the repository in Vercel.
+3. Vercel settings:
 
-The project uses pure static output (`dist/`) and can be deployed directly on Vercel.
+```txt
+Framework Preset: Astro
+Build Command: npm run build
+Output Directory: dist
+```
+
+4. Deploy.
+
+The project uses static output (`dist/`) and is deploy-ready for Vercel with no server runtime and no environment variables.
