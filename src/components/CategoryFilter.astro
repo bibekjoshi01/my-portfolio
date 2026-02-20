@@ -4,9 +4,16 @@ interface Props {
   id: string;
   mode?: 'buttons' | 'select';
   label?: string;
+  hideLabel?: boolean;
 }
 
-const { categories, id, mode = 'buttons', label = 'Category' } = Astro.props;
+const {
+  categories,
+  id,
+  mode = 'buttons',
+  label = 'Category',
+  hideLabel = false,
+} = Astro.props;
 ---
 
 {
@@ -33,18 +40,43 @@ const { categories, id, mode = 'buttons', label = 'Category' } = Astro.props;
         </button>
       ))}
     </div>
-  ) : (
-    <label class="flex flex-col gap-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-      {label}
+  ) : hideLabel ? (
+    <div class="relative">
       <select
         data-category-select={id}
-        class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm text-slate-700 outline-none ring-sky-500 transition focus:ring-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+        aria-label={label}
+        class="peer h-11 w-full appearance-none rounded-xl border border-slate-300 bg-white pl-4 pr-10 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-500/30 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-sky-400"
       >
         <option value="">All categories</option>
         {categories.map((category) => (
           <option value={category}>{category}</option>
         ))}
       </select>
+      <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400 transition peer-focus:text-sky-600 dark:text-slate-500 dark:peer-focus:text-sky-300">
+        <svg viewBox="0 0 20 20" aria-hidden="true" class="h-4 w-4 fill-current">
+          <path d="M5.3 7.5 10 12.2l4.7-4.7 1.3 1.3-6 6-6-6 1.3-1.3Z"></path>
+        </svg>
+      </span>
+    </div>
+  ) : (
+    <label class="flex flex-col gap-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+      {label}
+      <div class="relative">
+        <select
+          data-category-select={id}
+          class="peer h-11 w-full appearance-none rounded-xl border border-slate-300 bg-white pl-4 pr-10 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-500/30 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-sky-400"
+        >
+          <option value="">All categories</option>
+          {categories.map((category) => (
+            <option value={category}>{category}</option>
+          ))}
+        </select>
+        <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400 transition peer-focus:text-sky-600 dark:text-slate-500 dark:peer-focus:text-sky-300">
+          <svg viewBox="0 0 20 20" aria-hidden="true" class="h-4 w-4 fill-current">
+            <path d="M5.3 7.5 10 12.2l4.7-4.7 1.3 1.3-6 6-6-6 1.3-1.3Z"></path>
+          </svg>
+        </span>
+      </div>
     </label>
   )
 }

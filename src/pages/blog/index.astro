@@ -19,64 +19,40 @@ const tags = getAllTags(posts);
   description="Latest technical blog posts, organized by category, tags, and search."
 >
   <section class="space-y-8">
-    <header class="space-y-3">
-      <p
-        class="text-sm font-semibold uppercase tracking-[0.12em] text-sky-700 dark:text-sky-300"
-      >
-        Latest Writing
-      </p>
-      <h1
-        class="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50 sm:text-5xl"
-      >
-        Latest Posts
-      </h1>
-      <p class="max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">
-        Browse by category, combine tags, and search instantly across the newest
-        posts.
-      </p>
-    </header>
-
     <section class="reading-surface space-y-5 p-5 sm:p-6">
       <div class="grid gap-4 md:grid-cols-2">
-        <label
-          class="flex flex-col gap-2 text-sm font-medium text-slate-700 dark:text-slate-200"
-        >
-          Search
-          <input
-            type="search"
-            data-blog-search
-            placeholder="Search posts"
-            class="h-11 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-500/30 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-          />
-        </label>
+        <input
+          type="search"
+          aria-label="Search posts"
+          data-blog-search
+          placeholder="Search posts"
+          class="h-11 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-500/30 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+        />
 
         <CategoryFilter
           categories={categories}
           id="blog"
           mode="select"
           label="Category"
+          hideLabel={true}
         />
       </div>
 
-      <div class="space-y-2">
-        <p class="text-sm font-medium text-slate-700 dark:text-slate-200">
-          Tags (multi-select)
-        </p>
-        <div class="flex flex-wrap gap-2">
-          {
-            tags.map((tag) => (
-              <button
-                type="button"
-                data-blog-tag-button
-                data-tag={tag.toLowerCase()}
-                data-active="false"
-                class="rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700 transition data-[active=true]:border-sky-500 data-[active=true]:bg-sky-600 data-[active=true]:text-white dark:border-slate-700 dark:text-slate-200 dark:data-[active=true]:border-sky-400 dark:data-[active=true]:bg-sky-500 dark:data-[active=true]:text-slate-900"
-              >
-                {tag}
-              </button>
-            ))
-          }
-        </div>
+      <div class="flex flex-wrap gap-2">
+        {
+          tags.map((tag) => (
+            <button
+              type="button"
+              data-blog-tag-button
+              data-tag={tag.toLowerCase()}
+              data-active="false"
+              aria-label={`Filter by tag ${tag}`}
+              class="rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700 transition data-[active=true]:border-sky-500 data-[active=true]:bg-sky-600 data-[active=true]:text-white dark:border-slate-700 dark:text-slate-200 dark:data-[active=true]:border-sky-400 dark:data-[active=true]:bg-sky-500 dark:data-[active=true]:text-slate-900"
+            >
+              {tag}
+            </button>
+          ))
+        }
       </div>
 
       <div class="flex flex-wrap items-center justify-between gap-3">
@@ -120,7 +96,7 @@ const tags = getAllTags(posts);
 
     <nav
       data-blog-pagination
-      class="flex flex-wrap items-center justify-center gap-2"
+      class="hidden flex-wrap items-center justify-center gap-2"
       aria-label="Pagination"
     >
     </nav>
@@ -235,48 +211,50 @@ const tags = getAllTags(posts);
         pagination.innerHTML = "";
 
         if (totalPages <= 1) {
+          pagination.classList.add("hidden");
           return;
         }
 
-        const createButton = (
-          label,
-          page,
-          disabled = false,
-          active = false,
-        ) => {
+        pagination.classList.remove("hidden");
+
+        const createNavButton = (label, nextPage, disabled = false) => {
           const button = document.createElement("button");
           button.type = "button";
           button.textContent = label;
           button.disabled = disabled;
           button.className =
-            "rounded-lg border px-3 py-1.5 text-sm font-medium transition " +
-            (active
-              ? "border-slate-900 bg-slate-900 text-white dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900"
-              : "border-slate-300 text-slate-700 hover:border-sky-400 hover:text-sky-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300") +
+            "rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-sky-400 hover:text-sky-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300" +
             (disabled ? " cursor-not-allowed opacity-50" : "");
 
           if (!disabled) {
             button.addEventListener("click", () => {
-              currentPage = page;
+              currentPage = nextPage;
               render();
               window.scrollTo({ top: 0, behavior: "smooth" });
             });
           }
 
-          pagination.append(button);
+          return button;
         };
 
-        createButton("Prev", Math.max(1, currentPage - 1), currentPage === 1);
+        const prevButton = createNavButton(
+          "Previous",
+          Math.max(1, currentPage - 1),
+          currentPage === 1,
+        );
 
-        for (let page = 1; page <= totalPages; page += 1) {
-          createButton(String(page), page, false, page === currentPage);
-        }
+        const pageStatus = document.createElement("span");
+        pageStatus.className =
+          "px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300";
+        pageStatus.textContent = `Page ${currentPage} of ${totalPages}`;
 
-        createButton(
+        const nextButton = createNavButton(
           "Next",
           Math.min(totalPages, currentPage + 1),
           currentPage === totalPages,
         );
+
+        pagination.append(prevButton, pageStatus, nextButton);
       };
 
       const render = (resetPage = false) => {
