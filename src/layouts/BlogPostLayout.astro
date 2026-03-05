@@ -1,6 +1,7 @@
 ---
 import { Image, type LocalImageProps } from "astro:assets";
 import TagBadge from "@components/TagBadge.astro";
+import { renderInlineCode } from "@utils/renderInlineCode";
 
 interface Props {
   title: string;
@@ -23,6 +24,8 @@ const {
   category,
   featuredImage,
 } = Astro.props;
+
+const descriptionHtml = renderInlineCode(description);
 
 const publishedDateLabel = new Intl.DateTimeFormat("en-US", {
   month: "long",
@@ -73,23 +76,24 @@ const updatedDateLabel = updatedDate
       >
         {title}
       </h1>
-      <p class="w-full text-lg leading-8 text-slate-600 dark:text-slate-300">
-        {description}
-      </p>
+      <p
+        class="w-full text-lg leading-8 text-slate-600 dark:text-slate-300"
+        set:html={descriptionHtml}
+      ></p>
     </div>
 
     <div
       class="flex flex-wrap items-center gap-3 text-sm text-slate-500 dark:text-slate-400"
     >
       <time datetime={publishedDate.toISOString()}
-        >Published {publishedDateLabel}</time
+        >Published - {publishedDateLabel}</time
       >
       {
         updatedDate && (
           <>
             <span aria-hidden="true">•</span>
             <time datetime={updatedDate.toISOString()}>
-              Updated {updatedDateLabel}
+              Updated - {updatedDateLabel}
             </time>
           </>
         )

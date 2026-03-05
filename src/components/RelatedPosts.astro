@@ -1,6 +1,7 @@
 ---
 import type { BlogEntry } from '@utils/blog';
 import { getPostReadingTime } from '@utils/blog';
+import { renderInlineCode } from '@utils/renderInlineCode';
 
 interface Props {
   posts: BlogEntry[];
@@ -31,7 +32,10 @@ const formatDate = (date: Date) =>
                 {post.data.title}
               </a>
             </h3>
-            <p class="text-base text-slate-600 dark:text-slate-300">{post.data.description}</p>
+            <p
+              class="text-base text-slate-600 dark:text-slate-300"
+              set:html={renderInlineCode(post.data.description)}
+            ></p>
           </article>
         ))}
       </div>
