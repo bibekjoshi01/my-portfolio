@@ -45,20 +45,22 @@ const updatedDateLabel = updatedDate
 <article class="space-y-8">
   {
     featuredImage ? (
-      <Image
-        src={featuredImage}
-        alt={title}
-        class="reading-surface h-[280px] w-full object-cover sm:h-[380px]"
-        widths={[900, 1200, 1600]}
-        sizes="(max-width: 768px) 100vw, 768px"
-        loading="eager"
-        format="webp"
-      />
+      <div class="overflow-hidden rounded-xl">
+        <Image
+          src={featuredImage}
+          alt={title}
+          class="w-full object-cover max-h-[480px]"
+          widths={[900, 1200, 1600]}
+          sizes="(max-width: 768px) 100vw, 768px"
+          loading="eager"
+          format="webp"
+        />
+      </div>
     ) : (
       <img
         src="/og-default.svg"
         alt={title}
-        class="reading-surface h-[280px] w-full object-cover sm:h-[380px]"
+        class="w-full rounded-3xl object-contain max-h-[480px]"
         loading="eager"
       />
     )
@@ -79,7 +81,7 @@ const updatedDateLabel = updatedDate
       <p
         class="w-full text-lg leading-8 text-slate-600 dark:text-slate-300"
         set:html={descriptionHtml}
-      ></p>
+      />
     </div>
 
     <div

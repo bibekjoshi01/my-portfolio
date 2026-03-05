@@ -10,7 +10,7 @@ tags:
   - Docker
   - Production
 category: Backend Engineering
-featuredImage: ./images/performance-budgets.png
+featuredImage: ./images/fastapi-project-structure.png
 draft: false
 ---
 
