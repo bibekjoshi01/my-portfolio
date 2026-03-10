@@ -124,7 +124,19 @@ const jsonLdPayload = jsonLd ? JSON.stringify(jsonLd) : "";
           {siteConfig.name}
         </a>
 
-        <nav class="flex items-center">
+        <nav class="flex items-center gap-10">
+          <a
+            href="/blog"
+            class="text-sm font-semibold text-slate-700 hover:text-sky-600 dark:text-slate-200 dark:hover:text-sky-300"
+          >
+            My Posts
+          </a>
+          <a
+            href="/projects"
+            class="text-sm font-semibold text-slate-700 hover:text-sky-600 dark:text-slate-200 dark:hover:text-sky-300"
+          >
+            Projects
+          </a>
           <ThemeToggle />
         </nav>
       </div>

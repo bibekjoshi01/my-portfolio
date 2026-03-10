@@ -1,0 +1,69 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+
+const projects = [
+  {
+    title: "Personal technical blog",
+    description:
+      "Built with Astro, TypeScript, and Tailwind to spotlight AI, systems design, and backend engineering learnings alongside a local newsletter capture experience.",
+    href: "/blog",
+  },
+  {
+    title: "AI systems integration experiments",
+    description:
+      "Exploring Django backends, RAG pipelines, and Celery-powered automation to make AI features reliable in production environments.",
+  },
+  {
+    title: "Backend tooling & consulting",
+    description:
+      "Helping teams build scalable REST APIs, observability tooling, and deployment pipelines so small crews can operate like mature platform shops.",
+  },
+];
+---
+
+<BaseLayout
+  title="Projects"
+  description="A quick view of ongoing engineering experiments, this site, and the backend tooling I deliver."
+>
+  <section class="space-y-8 px-5 py-10 sm:px-6">
+    <div class="space-y-3">
+      <p class="text-sm font-semibold uppercase tracking-[0.3em] text-sky-700">
+        Projects
+      </p>
+      <h1
+        class="text-3xl font-bold text-slate-900 dark:text-slate-50 sm:text-4xl"
+      >
+        What I build
+      </h1>
+      <p class="text-base text-slate-600 dark:text-slate-300">
+        A collection of the ongoing work that keeps my systems and AI focus
+        sharp.
+      </p>
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-2">
+      {
+        projects.map((project) => (
+          <article class="rounded-3xl border border-slate-200 bg-white/70 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
+            <div class="flex flex-col gap-2">
+              <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">
+                {project.title}
+              </h2>
+              <p class="text-sm text-slate-600 dark:text-slate-300">
+                {project.description}
+              </p>
+            </div>
+            {project.href && (
+              <a
+                href={project.href}
+                class="mt-4 inline-flex items-center text-sm font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-300"
+              >
+                Explore
+              </a>
+            )}
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

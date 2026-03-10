@@ -20,7 +20,8 @@ const blogJsonLd = [
     "@context": "https://schema.org",
     "@type": "Blog",
     name: `${siteConfig.name} Blog`,
-    description: "Latest technical writing on backend engineering and AI systems.",
+    description:
+      "Latest technical writing on backend engineering and AI systems.",
     url: blogUrl,
     inLanguage: siteConfig.language,
   },
@@ -43,17 +44,12 @@ const blogJsonLd = [
 <BaseLayout
   title="Blog"
   description="Latest technical blog posts, organized by category, tags, and search."
-  keywords={[
-    "Blog",
-    "Backend Engineering",
-    "AI Systems",
-    ...categories,
-  ]}
+  keywords={["Blog", "Backend Engineering", "AI Systems", ...categories]}
   jsonLd={blogJsonLd}
 >
   <section class="space-y-8" data-blog-page>
     <section class="reading-surface space-y-5 p-5 sm:p-6">
-      <div class="grid gap-4 md:grid-cols-2">
+      <div class="grid gap-4 md:grid-cols-[70%_30%]">
         <input
           type="search"
           aria-label="Search posts"
@@ -135,7 +131,9 @@ const blogJsonLd = [
 
       const postList = root.querySelector("[data-blog-post-list]");
       const searchInput = root.querySelector("[data-blog-search]");
-      const categorySelect = root.querySelector('[data-category-select="blog"]');
+      const categorySelect = root.querySelector(
+        '[data-category-select="blog"]',
+      );
       const cards =
         postList instanceof HTMLElement
           ? Array.from(postList.querySelectorAll("[data-post-card]"))
