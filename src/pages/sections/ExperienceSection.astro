@@ -1,0 +1,56 @@
+---
+import type { ExperienceItem } from "@data/resume";
+
+const { title, subtitle, description, items } = Astro.props as {
+  title: string;
+  subtitle: string;
+  description: string;
+  items: ExperienceItem[];
+};
+---
+
+<section
+  class="space-y-6 rounded-3xl border border-slate-200 bg-white/60 px-6 py-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 sm:px-8"
+>
+  <div class="flex flex-col gap-1">
+    <p class="text-sm font-semibold uppercase tracking-[0.3em] text-sky-700 dark:text-sky-300">
+      {title}
+    </p>
+    <h2 class="text-2xl font-semibold text-slate-900 dark:text-slate-100">
+      {subtitle}
+    </h2>
+    <p class="text-sm text-slate-600 dark:text-slate-400">{description}</p>
+  </div>
+
+  <div class="space-y-6">
+    {items.map((item) => (
+      <article class="relative border-l-2 border-slate-200 pl-6 dark:border-slate-700">
+        <span
+          class="absolute left-0 top-5 block h-3 w-3 -translate-x-1/2 rounded-full bg-sky-500 ring-4 ring-white dark:ring-slate-900"
+          aria-hidden="true"
+        ></span>
+        <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p class="text-lg font-semibold text-slate-900 dark:text-slate-100">{item.title}</p>
+              <p class="text-sm font-medium text-slate-500 dark:text-slate-400">
+                {item.company}
+                {item.location ? ` · ${item.location}` : ""}
+              </p>
+            </div>
+            <span class="text-sm font-medium text-slate-500 dark:text-slate-400">{item.duration}</span>
+          </div>
+          <p class="text-sm text-slate-600 dark:text-slate-300">{item.summary}</p>
+          <ul class="space-y-1 text-sm text-slate-600 dark:text-slate-300">
+            {item.highlights.map((highlight) => (
+              <li class="flex items-start gap-2">
+                <span class="mt-1 h-1.5 w-1.5 rounded-full bg-sky-500"></span>
+                <span>{highlight}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>

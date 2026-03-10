@@ -1,0 +1,52 @@
+---
+import type { AuthorProfile } from "@data/authors";
+import { getIconPath } from "@data/socialIcons";
+
+const { author } = Astro.props as { author: AuthorProfile };
+---
+
+<header
+  class="reading-surface grid gap-5 px-5 py-6 sm:px-6 sm:py-7 lg:grid-cols-[220px,1fr] lg:items-center lg:pr-4"
+>
+  <img
+    src={author.avatar}
+    alt={author.name}
+    width="340"
+    height="340"
+    class="h-40 w-40 rounded-full border border-slate-200 object-cover dark:border-slate-700 sm:h-52 sm:w-52"
+    loading="eager"
+  />
+
+  <div class="space-y-4">
+    <p class="text-sm font-semibold uppercase tracking-[0.14em] text-sky-700 dark:text-sky-300">
+      About Me
+    </p>
+    <h1 class="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50 sm:text-5xl">
+      {author.name}
+    </h1>
+    <p class="text-base font-semibold text-slate-700 dark:text-slate-200">{author.role}</p>
+    <p class="text-lg leading-8 text-slate-600 dark:text-slate-300">{author.bio}</p>
+
+    <div class="flex flex-wrap items-center gap-3">
+      {
+        author.social.map((social) => (
+          <a
+            href={social.url}
+            target={social.url.startsWith("http") ? "_blank" : undefined}
+            rel={
+              social.url.startsWith("http")
+                ? "noopener noreferrer"
+                : undefined
+            }
+            class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-sky-400 hover:text-sky-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="h-4 w-4 fill-current">
+              <path d={getIconPath(social.label)} />
+            </svg>
+            {social.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</header>
