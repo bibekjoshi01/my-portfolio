@@ -1,69 +1,117 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
+import { projects } from "@data/projects/projects";
 
-const projects = [
+const openSource = projects.filter((project) => project.openSource);
+const privateWork = projects.filter((project) => !project.openSource);
+const sections = [
   {
-    title: "Personal technical blog",
-    description:
-      "Built with Astro, TypeScript, and Tailwind to spotlight AI, systems design, and backend engineering learnings alongside a local newsletter capture experience.",
-    href: "/blog",
+    title: "Open source work",
+    description: "Ready for the community and easy to explore.",
+    items: openSource,
   },
   {
-    title: "AI systems integration experiments",
+    title: "Studio & private engagements",
     description:
-      "Exploring Django backends, RAG pipelines, and Celery-powered automation to make AI features reliable in production environments.",
-  },
-  {
-    title: "Backend tooling & consulting",
-    description:
-      "Helping teams build scalable REST APIs, observability tooling, and deployment pipelines so small crews can operate like mature platform shops.",
+      "Client projects, consults, and experiments that keep production work moving.",
+    items: privateWork,
   },
 ];
+
+const badgeClasses = (openSource: boolean) =>
+  [
+    "rounded-full px-3 py-1 text-xs font-semibold",
+    openSource ? "bg-sky-100 text-sky-600" : "bg-amber-100 text-amber-700",
+    "dark:bg-slate-800",
+  ].join(" ");
 ---
 
 <BaseLayout
   title="Projects"
-  description="A quick view of ongoing engineering experiments, this site, and the backend tooling I deliver."
+  description="A curated view of open-source builds, AI experiments, and consulting work that keep the backend focus sharp."
 >
-  <section class="space-y-8 px-5 py-10 sm:px-6">
-    <div class="space-y-3">
-      <p class="text-sm font-semibold uppercase tracking-[0.3em] text-sky-700">
-        Projects
-      </p>
-      <h1
-        class="text-3xl font-bold text-slate-900 dark:text-slate-50 sm:text-4xl"
-      >
-        What I build
-      </h1>
-      <p class="text-base text-slate-600 dark:text-slate-300">
-        A collection of the ongoing work that keeps my systems and AI focus
-        sharp.
-      </p>
-    </div>
+  <section class="space-y-10">
+    <div class="container-shell space-y-8">
+      <div class="space-y-3 text-slate-900 dark:text-slate-100">
+        <p
+          class="text-sm font-semibold uppercase tracking-[0.3em] text-sky-700"
+        >
+          Projects
+        </p>
+        <h1 class="text-3xl font-bold sm:text-4xl">What I build</h1>
+      </div>
 
-    <div class="grid gap-6 md:grid-cols-2">
-      {
-        projects.map((project) => (
-          <article class="rounded-3xl border border-slate-200 bg-white/70 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/40">
-            <div class="flex flex-col gap-2">
-              <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">
-                {project.title}
-              </h2>
-              <p class="text-sm text-slate-600 dark:text-slate-300">
-                {project.description}
-              </p>
-            </div>
-            {project.href && (
-              <a
-                href={project.href}
-                class="mt-4 inline-flex items-center text-sm font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-300"
-              >
-                Explore
-              </a>
-            )}
-          </article>
-        ))
-      }
+      <div class="space-y-12">
+        {
+          sections.map((section) =>
+            section.items.length > 0 ? (
+              <div class="reading-surface space-y-5 p-6 dark:reading-surface">
+                <div class="flex flex-col gap-1">
+                  <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">
+                    {section.title}
+                  </h2>
+                  <p class="text-sm text-slate-500 dark:text-slate-400">
+                    {section.description}
+                  </p>
+                </div>
+                <div class="grid gap-6 md:grid-cols-2">
+                  {section.items.map((project) => (
+                    <article class="flex h-full flex-col gap-4 rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-lg shadow-slate-900/5 transition hover:-translate-y-1 hover:border-sky-200 hover:shadow-sky-200/40 dark:border-slate-800 dark:bg-slate-900/40 dark:shadow-none">
+                      <div class="flex items-start justify-between gap-3">
+                        <div>
+                          <p class="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">
+                            {project.status ?? section.title}
+                          </p>
+                          <h3 class="text-xl font-semibold text-slate-900 dark:text-slate-50">
+                            {project.name}
+                          </h3>
+                        </div>
+                        <span class={badgeClasses(project.openSource)}>
+                          {project.openSource ? "Open source" : "Private"}
+                        </span>
+                      </div>
+                      <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                        {project.description}
+                      </p>
+                      <div class="flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
+                        {project.tags.map((tag) => (
+                          <span class="rounded-full border border-slate-200 px-3 py-1 text-[0.6rem] text-slate-500 dark:border-slate-700">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <div class="mt-auto flex flex-wrap gap-3 text-sm font-semibold">
+                        {project.link && (
+                          <a
+                            href={project.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center gap-1 text-slate-800 underline-offset-4 transition hover:text-sky-600 dark:text-slate-200 dark:hover:text-sky-400"
+                          >
+                            Explore
+                            <span aria-hidden="true">↗</span>
+                          </a>
+                        )}
+                        {project.github && (
+                          <a
+                            href={project.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center gap-1 text-slate-800 underline-offset-4 transition hover:text-sky-600 dark:text-slate-200 dark:hover:text-sky-400"
+                          >
+                            GitHub
+                            <span aria-hidden="true">↗</span>
+                          </a>
+                        )}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            ) : null,
+          )
+        }
+      </div>
     </div>
   </section>
 </BaseLayout>
