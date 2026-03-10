@@ -4,11 +4,12 @@ import PostCard from "@components/PostCard.astro";
 import NewsletterForm from "@components/NewsletterForm.astro";
 import ExperienceSection from "./sections/ExperienceSection.astro";
 import EducationSection from "./sections/EducationSection.astro";
+import OtherExperienceSection from "./sections/OtherExperienceSection.astro";
 import AboutSection from "./sections/About.astro";
 import { getPostReadingTime, getPublishedPosts } from "@utils/blog";
 import { siteConfig } from "@data/site";
 import { getAuthorProfile } from "@data/authors";
-import { education, experience } from "@data/resume";
+import { education, experience, otherExperience } from "@data/resume";
 
 const posts = await getPublishedPosts();
 const featuredPosts = posts.slice(0, 3);
@@ -55,6 +56,10 @@ const homeJsonLd = [
     <section class="space-y-10">
       <ExperienceSection title="Experience" items={experience} />
       <EducationSection title="Education" items={education} />
+      <OtherExperienceSection
+        title="Other Experience"
+        items={otherExperience}
+      />
     </section>
 
     <!-- Featured Post Section -->

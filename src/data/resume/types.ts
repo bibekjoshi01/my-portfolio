@@ -14,3 +14,9 @@ export type EducationItem = {
   location?: string;
   highlights?: string[];
 };
+
+export type OtherExperienceEntry = {
+  title: string;
+  summary: string;
+  highlights: string[];
+};

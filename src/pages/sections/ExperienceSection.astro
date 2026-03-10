@@ -1,10 +1,8 @@
 ---
 import type { ExperienceItem } from "@data/resume";
 
-const { title, subtitle, description, items } = Astro.props as {
+const { title, items } = Astro.props as {
   title: string;
-  subtitle: string;
-  description: string;
   items: ExperienceItem[];
 };
 ---
@@ -16,10 +14,6 @@ const { title, subtitle, description, items } = Astro.props as {
     <p class="text-sm font-semibold uppercase tracking-[0.3em] text-sky-700 dark:text-sky-300">
       {title}
     </p>
-    <h2 class="text-2xl font-semibold text-slate-900 dark:text-slate-100">
-      {subtitle}
-    </h2>
-    <p class="text-sm text-slate-600 dark:text-slate-400">{description}</p>
   </div>
 
   <div class="space-y-6">
