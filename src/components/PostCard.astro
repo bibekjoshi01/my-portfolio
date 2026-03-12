@@ -56,9 +56,10 @@ const categoryHref = `/blog?category=${encodeURIComponent(category)}`;
         src={featuredImage}
         alt={title}
         class="h-52 w-full object-cover transition duration-300 sm:h-full sm:min-h-[220px]"
-        widths={[480, 720, 960]}
-        sizes="(max-width: 640px) 100vw, (max-width: 1280px) 40vw, 420px"
+        widths={[480, 720, 960, 1280, 1600]}
+        sizes="(max-width: 640px) 100vw, (max-width: 1280px) 45vw, 520px"
         loading="lazy"
+        quality={90}
         format="webp"
       />
     ) : (
